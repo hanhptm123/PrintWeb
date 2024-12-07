@@ -1,0 +1,158 @@
+﻿@model X.PagedList.IPagedList<PrintWeb.Data.Printer>
+@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+
+@{
+    ViewData["Title"] = "Printer List";
+    Layout = "~/Views/Shared/_Homepage.cshtml";
+}
+
+<style>
+    /* Custom styles for the table */
+    .table th, .table td {
+        vertical-align: middle; /* Aligns content vertically */
+        padding: 15px; /* Adds more space */
+    }
+
+    .table th {
+        text-align: center; /* Centers column headers */
+        background-color: #007bff; /* Light blue background for headers */
+        color: white; /* White text for headers */
+    }
+
+    .table td {
+        text-align: center; /* Centers data content */
+        background-color: #f9f9f9; /* Light gray background for data cells */
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #e0e0e0; /* Highlights rows on hover with light gray */
+    }
+
+    .table-responsive {
+        margin-top: 20px; /* Adds spacing around the table */
+    }
+
+    thead.thead-dark {
+        background-color: #343a40;
+        color: white; /* Dark background for the header */
+    }
+
+    h1 {
+        color: #007bff; /* Light blue color for the title */
+        text-align: center; /* Center the title */
+    }
+
+    /* Pagination container */
+    .pagination {
+        display: flex;
+        justify-content: center; /* Center align pagination */
+        margin-top: 20px;
+        font-size: 16px;
+        list-style-type: none; /* Remove default bullets */
+        padding: 0; /* Remove default padding */
+    }
+
+    .pagination-container {
+        margin-top: 20px;
+    }
+
+    /* Pagination items styling */
+    .pagination .page-item {
+        margin: 0 5px;
+        border-radius: 50px; /* Round corners for pagination buttons */
+    }
+
+    .pagination .page-link {
+        border-radius: 50px; /* Round the edges of the page links */
+        padding: 10px 16px; /* Add padding inside the buttons */
+        color: #007bff; /* Blue color for text */
+        background-color: #f0f0f0; /* Light gray background */
+        border: 1px solid #007bff; /* Border color */
+        transition: all 0.3s ease-in-out; /* Smooth transition for hover effects */
+        text-decoration: none; /* Remove underline from links */
+    }
+
+    /* Active page styles */
+    .pagination .page-item.active .page-link {
+        background-color: #007bff; /* Blue background for active page */
+        color: white; /* White text color */
+        border-color: #007bff; /* Border color to match active background */
+        font-weight: bold; /* Bold text for the active page */
+    }
+
+    /* Hover effect for pagination links */
+    .pagination .page-item:hover .page-link {
+        background-color: #007bff; /* Change to blue on hover */
+        color: white; /* White text when hovered */
+        border-color: #0056b3; /* Darker blue border on hover */
+    }
+
+    /* Disabled items (e.g., first/last page on edge cases) */
+    .pagination .page-item.disabled .page-link {
+        background-color: #e9ecef; /* Light gray background */
+        color: #6c757d; /* Gray text for disabled links */
+        border-color: #dee2e6; /* Light gray border */
+        pointer-events: none; /* Disable pointer events */
+    }
+
+    /* Pagination ellipses (...) style */
+    .pagination .page-item.disabled .page-link {
+        pointer-events: none; /* Disable click on ellipses */
+    }
+</style>
+
+<h1 class="text-center my-4">Printer List</h1>
+
+<div class="table-responsive mx-auto">
+    <table class="table table-striped table-bordered table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.First().PrinterId)</th>
+                <th>@Html.DisplayNameFor(model => model.First().Brand)</th>
+                <th>@Html.DisplayNameFor(model => model.First().Model)</th>
+                <th>@Html.DisplayNameFor(model => model.First().Description)</th>
+                <th>@Html.DisplayNameFor(model => model.First().CampusName)</th>
+                <th>@Html.DisplayNameFor(model => model.First().BuildingName)</th>
+                <th>@Html.DisplayNameFor(model => model.First().RoomNumber)</th>
+                <th>@Html.DisplayNameFor(model => model.First().Status)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.PrinterId)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Brand)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Model)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                    <td>@Html.DisplayFor(modelItem => item.CampusName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.BuildingName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.RoomNumber)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Status)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div style="display: flex; justify-content: center;">
+    @Html.PagedListPager(Model, page => Url.Action("Index", "Printers", new { page = page }), new PagedListRenderOptions()
+{
+    DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+    DisplayLinkToLastPage = PagedListDisplayMode.Always,
+    DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+    DisplayLinkToNextPage = PagedListDisplayMode.Always,
+    DisplayLinkToIndividualPages = true,
+    MaximumPageNumbersToDisplay = 10,
+    DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+    LinkToFirstPageFormat = "First",
+    LinkToPreviousPageFormat = "<",
+    LinkToNextPageFormat = ">",
+    LinkToLastPageFormat = "Last",
+    PageClasses = new string[] { "page-item", "page-link" },
+    ContainerDivClasses = new string[] { "pagination-container" },
+    UlElementClasses = new string[] { "pagination" },
+    LiElementClasses = new string[] { "page-item" }
+})
+</div>
