@@ -19,6 +19,8 @@ public partial class Printer
 
     public int RoomNumber { get; set; }
 
+    public string? Status { get; set; }
+
     public virtual ICollection<DetailPaperPrinter> DetailPaperPrinters { get; set; } = new List<DetailPaperPrinter>();
 
     public virtual ICollection<PrintingLog> PrintingLogs { get; set; } = new List<PrintingLog>();

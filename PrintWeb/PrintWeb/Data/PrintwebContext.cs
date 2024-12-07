@@ -45,7 +45,7 @@ public partial class PrintwebContext : DbContext
     {
         modelBuilder.Entity<Account>(entity =>
         {
-            entity.HasKey(e => e.AccountId).HasName("PK__Account__349DA586122C2C3E");
+            entity.HasKey(e => e.AccountId).HasName("PK__Account__349DA5862D93361B");
 
             entity.ToTable("Account");
 
@@ -53,6 +53,7 @@ public partial class PrintwebContext : DbContext
                 .HasMaxLength(250)
                 .HasColumnName("AccountID");
             entity.Property(e => e.Password).HasMaxLength(250);
+            entity.Property(e => e.Role).HasMaxLength(250);
 
             entity.HasOne(d => d.AccountNavigation).WithOne(p => p.Account)
                 .HasForeignKey<Account>(d => d.AccountId)
@@ -62,7 +63,7 @@ public partial class PrintwebContext : DbContext
 
         modelBuilder.Entity<BuyPaperLog>(entity =>
         {
-            entity.HasKey(e => e.BuyPaperLogId).HasName("PK__BuyPaper__D287C5897C191B57");
+            entity.HasKey(e => e.BuyPaperLogId).HasName("PK__BuyPaper__D287C589FCA3D254");
 
             entity.ToTable("BuyPaperLog");
 
@@ -83,7 +84,7 @@ public partial class PrintwebContext : DbContext
 
         modelBuilder.Entity<DetailBuyPaperLog>(entity =>
         {
-            entity.HasKey(e => new { e.BuyPaperLogId, e.PaperTypeId }).HasName("PK__DetailBu__D287C5893386473B");
+            entity.HasKey(e => new { e.BuyPaperLogId, e.PaperTypeId }).HasName("PK__DetailBu__D287C589BA47E158");
 
             entity.ToTable("DetailBuyPaperLog");
 
@@ -103,7 +104,7 @@ public partial class PrintwebContext : DbContext
 
         modelBuilder.Entity<DetailPaperPrinter>(entity =>
         {
-            entity.HasKey(e => new { e.PaperTypeId, e.PrinterId }).HasName("PK__DetailPa__F95F653A17C621C7");
+            entity.HasKey(e => new { e.PaperTypeId, e.PrinterId }).HasName("PK__DetailPa__F95F653AC1B453B6");
 
             entity.ToTable("DetailPaperPrinter");
 
@@ -147,7 +148,7 @@ public partial class PrintwebContext : DbContext
 
         modelBuilder.Entity<Document>(entity =>
         {
-            entity.HasKey(e => e.DocumentId).HasName("PK__Document__1ABEEF6F086F3606");
+            entity.HasKey(e => e.DocumentId).HasName("PK__Document__1ABEEF6F493AC0BA");
 
             entity.ToTable("Document");
 
@@ -167,7 +168,7 @@ public partial class PrintwebContext : DbContext
 
         modelBuilder.Entity<PaperType>(entity =>
         {
-            entity.HasKey(e => e.PaperTypeId).HasName("PK__PaperTyp__F95F653A4AABFF0F");
+            entity.HasKey(e => e.PaperTypeId).HasName("PK__PaperTyp__F95F653ACB65F6F3");
 
             entity.ToTable("PaperType");
 
@@ -178,7 +179,7 @@ public partial class PrintwebContext : DbContext
 
         modelBuilder.Entity<PaymentMethod>(entity =>
         {
-            entity.HasKey(e => e.PaymentMethodId).HasName("PK__PaymentM__DC31C1F3638EBF74");
+            entity.HasKey(e => e.PaymentMethodId).HasName("PK__PaymentM__DC31C1F36A0E6C98");
 
             entity.ToTable("PaymentMethod");
 
@@ -188,7 +189,7 @@ public partial class PrintwebContext : DbContext
 
         modelBuilder.Entity<PaymentRecord>(entity =>
         {
-            entity.HasKey(e => e.PaymentId).HasName("PK__PaymentR__9B556A5817A13214");
+            entity.HasKey(e => e.PaymentId).HasName("PK__PaymentR__9B556A58743C0A14");
 
             entity.Property(e => e.PaymentId)
                 .HasMaxLength(250)
@@ -212,7 +213,7 @@ public partial class PrintwebContext : DbContext
 
         modelBuilder.Entity<Printer>(entity =>
         {
-            entity.HasKey(e => e.PrinterId).HasName("PK__Printer__D452AB219F1CD488");
+            entity.HasKey(e => e.PrinterId).HasName("PK__Printer__D452AB2135360DD1");
 
             entity.ToTable("Printer");
 
@@ -223,11 +224,12 @@ public partial class PrintwebContext : DbContext
             entity.Property(e => e.BuildingName).HasMaxLength(250);
             entity.Property(e => e.CampusName).HasMaxLength(250);
             entity.Property(e => e.Model).HasMaxLength(250);
+            entity.Property(e => e.Status).HasMaxLength(250);
         });
 
         modelBuilder.Entity<PrintingLog>(entity =>
         {
-            entity.HasKey(e => e.PrintingLogId).HasName("PK__Printing__005BFECEFA1CB86E");
+            entity.HasKey(e => e.PrintingLogId).HasName("PK__Printing__005BFECE3AB14CB1");
 
             entity.ToTable("PrintingLog");
 
@@ -269,7 +271,7 @@ public partial class PrintwebContext : DbContext
 
         modelBuilder.Entity<Student>(entity =>
         {
-            entity.HasKey(e => e.StudentId).HasName("PK__Student__32C52A79FD76FC9B");
+            entity.HasKey(e => e.StudentId).HasName("PK__Student__32C52A796CEEFEBC");
 
             entity.ToTable("Student");
 
