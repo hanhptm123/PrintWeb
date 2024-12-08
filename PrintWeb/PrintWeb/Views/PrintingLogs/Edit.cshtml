@@ -1,0 +1,80 @@
+﻿@model PrintWeb.Data.PrintingLog
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Homepage.cshtml";
+}
+
+<h1>Edit</h1>
+
+<h4>PrintingLog</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="PrintingLogId" />
+            <div class="form-group">
+                <label asp-for="StudentId" class="control-label"></label>
+                <select asp-for="StudentId" class="form-control" asp-items="ViewBag.StudentId"></select>
+                <span asp-validation-for="StudentId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PrinterId" class="control-label"></label>
+                <select asp-for="PrinterId" class="form-control" asp-items="ViewBag.PrinterId"></select>
+                <span asp-validation-for="PrinterId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DocumentId" class="control-label"></label>
+                <select asp-for="DocumentId" class="form-control" asp-items="ViewBag.DocumentId"></select>
+                <span asp-validation-for="DocumentId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PaperTypeId" class="control-label"></label>
+                <select asp-for="PaperTypeId" class="form-control" asp-items="ViewBag.PaperTypeId"></select>
+                <span asp-validation-for="PaperTypeId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Colored" class="control-label"></label>
+                <input asp-for="Colored" class="form-control" />
+                <span asp-validation-for="Colored" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StartTime" class="control-label"></label>
+                <input asp-for="StartTime" class="form-control" />
+                <span asp-validation-for="StartTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EndTime" class="control-label"></label>
+                <input asp-for="EndTime" class="form-control" />
+                <span asp-validation-for="EndTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Quantity" class="control-label"></label>
+                <input asp-for="Quantity" class="form-control" />
+                <span asp-validation-for="Quantity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IsTwoSide" class="control-label"></label>
+                <input asp-for="IsTwoSide" class="form-control" />
+                <span asp-validation-for="IsTwoSide" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Status" class="control-label"></label>
+                <input asp-for="Status" class="form-control" />
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
