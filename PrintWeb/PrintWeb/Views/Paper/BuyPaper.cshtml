@@ -1,0 +1,82 @@
+﻿@model IEnumerable<PrintWeb.Data.PaperType>
+
+@{
+    ViewData["Title"] = "Buy Paper";
+}
+
+<h2 class="mb-4">Mua thêm giấy</h2>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h4>Thông tin sinh viên</h4>
+        <p><strong>Mã sinh viên:</strong> @ViewBag.Student.StudentId</p>
+        <p><strong>Tên sinh viên:</strong> @ViewBag.Student.StudentName</p>
+        <p><strong>Số dư tài khoản:</strong> @string.Format("{0:C}", ViewBag.Student.AccountBalance)</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h4>Chọn loại giấy</h4>
+        <form method="post" asp-action="ProcessPayment">
+            <div class="form-group mb-3">
+                <label for="paperTypeId">Loại giấy:</label>
+                <select id="paperTypeId" name="paperTypeId" class="form-control" required>
+                    <option value="">-- Chọn loại giấy --</option>
+                    @foreach (var paperType in Model)
+                    {
+                        <option value="@paperType.PaperTypeId" data-price="@paperType.Price">
+                            @paperType.PaperTypeName - @string.Format("{0:C}", paperType.Price) / trang
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="quantity">Số lượng:</label>
+                <input type="number" id="quantity" name="quantity" class="form-control" min="1" required />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="totalAmount">Tổng tiền:</label>
+                <input type="text" id="totalAmount" class="form-control" readonly />
+            </div>
+
+            <div class="form-group mb-3">
+                <button type="submit" class="btn btn-primary">Thanh toán</button>
+                <a asp-action="Index" asp-controller="Home" class="btn btn-secondary">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const paperTypeDropdown = document.getElementById('paperTypeId');
+    const quantityInput = document.getElementById('quantity');
+    const totalAmountField = document.getElementById('totalAmount');
+
+    function calculateTotal() {
+        const selectedOption = paperTypeDropdown.options[paperTypeDropdown.selectedIndex];
+        const pricePerPage = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+        const quantity = parseInt(quantityInput.value) || 0;
+        const totalAmount = pricePerPage * quantity;
+        totalAmountField.value = totalAmount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    }
+
+    paperTypeDropdown.addEventListener('change', calculateTotal);
+    quantityInput.addEventListener('input', calculateTotal);
+</script>
