@@ -39,7 +39,7 @@ public partial class PrintwebContext : DbContext
 
     public virtual DbSet<Student> Students { get; set; }
 
-   
+    
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -250,22 +250,18 @@ public partial class PrintwebContext : DbContext
 
             entity.HasOne(d => d.Document).WithMany(p => p.PrintingLogs)
                 .HasForeignKey(d => d.DocumentId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_PrintingLog_Document");
 
             entity.HasOne(d => d.PaperType).WithMany(p => p.PrintingLogs)
                 .HasForeignKey(d => d.PaperTypeId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_PrintingLog_PaperType");
 
             entity.HasOne(d => d.Printer).WithMany(p => p.PrintingLogs)
                 .HasForeignKey(d => d.PrinterId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_PrintingLog_Printer");
 
             entity.HasOne(d => d.Student).WithMany(p => p.PrintingLogs)
                 .HasForeignKey(d => d.StudentId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_PrintingLog_Student");
         });
 
