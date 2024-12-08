@@ -1,0 +1,85 @@
+﻿@model PrintWeb.Data.PrintingLog
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Homepage.cshtml";
+}
+
+<h1>Create</h1>
+
+<h4>PrintingLog</h4>
+<hr />
+
+<!-- Alert Box for Errors -->
+<div class="alert alert-danger" role="alert" style="display: @(ViewData.ModelState.ErrorCount > 0 ? "block" : "none");">
+    @foreach (var modelError in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+    {
+        <p>@modelError.ErrorMessage</p>
+    }
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <!-- Document Selection -->
+            <div class="form-group">
+                <label asp-for="DocumentId" class="control-label"></label>
+                <select asp-for="DocumentId" class="form-control" asp-items="ViewBag.DocumentId"></select>
+                <span asp-validation-for="DocumentId" class="text-danger"></span>
+            </div>
+
+            <!-- Printer Selection -->
+            <div class="form-group">
+                <label asp-for="PrinterId" class="control-label"></label>
+                <select asp-for="PrinterId" class="form-control" asp-items="ViewBag.PrinterId"></select>
+                <span asp-validation-for="PrinterId" class="text-danger"></span>
+            </div>
+
+            <!-- Paper Type Selection -->
+            <div class="form-group">
+                <label asp-for="PaperTypeId" class="control-label"></label>
+                <select asp-for="PaperTypeId" class="form-control" asp-items="ViewBag.PaperTypeId"></select>
+                <span asp-validation-for="PaperTypeId" class="text-danger"></span>
+            </div>
+
+            <!-- Quantity Input -->
+            <div class="form-group">
+                <label asp-for="Quantity" class="control-label"></label>
+                <input asp-for="Quantity" class="form-control" type="number" />
+                <span asp-validation-for="Quantity" class="text-danger"></span>
+            </div>
+
+            <!-- Hidden Fields -->
+            <input asp-for="StudentId" type="hidden" />
+            <input asp-for="StartTime" type="hidden" />
+            <input asp-for="EndTime" type="hidden" />
+            <input asp-for="Status" type="hidden" value="Completed" />
+
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+<style>
+    .alert-danger {
+        border: 1px solid red;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+</style>

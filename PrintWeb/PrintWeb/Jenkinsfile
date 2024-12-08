@@ -1,0 +1,62 @@
+pipeline {
+    agent any
+    environment {
+        // Docker Hub credentials
+        PAT_CREDENTIALS_ID = "PAT_Jenkins"
+        DOCKER_CREDENTIALS_ID = "docker-hub" // Set Jenkins Docker Hub credentials ID here
+        DOCKER_IMAGE = "studyhanh/hcmsiu:v1" // Change to your desired image name and tag
+        CONTAINER_NAME = "hcmsiu" // Replace with your Docker container name
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Pull the code from a private GitHub repository
+                git url: 'https://github.com/hanhptm123/PrintWeb.git', credentialsId: "${PAT_CREDENTIALS_ID}"
+                echo "Update git repo complete"
+            }
+        }
+
+        stage('Build Then Push Docker Image to Docker Hub') {
+            steps {
+                script {
+                    try {
+                        echo "Starting Docker build and push stage..."
+                        // Build and push the Docker image
+                        withDockerRegistry([credentialsId: "${DOCKER_CREDENTIALS_ID}", url: 'https://index.docker.io/v1/']) {
+                            // Build and push the Docker image using Dockerfile from the correct directory
+                            sh "docker build -t ${DOCKER_IMAGE} -f HCMSIU/Dockerfile ."
+                            sh "docker push ${DOCKER_IMAGE}"
+                        }
+
+                        echo "Docker image ${DOCKER_IMAGE} pushed to Docker Hub."
+                    } catch (Exception e) {
+                        echo "Error occurred during Docker build/push: ${e.getMessage()}"
+                        throw e // rethrow the error to stop the pipeline if something goes wrong
+                    }
+                }
+            }
+        }
+
+        stage('Deploy New Image Locally') {
+            steps {
+                script {
+                    try {
+                        echo "Deploying the new Docker image locally..."
+                        // Pull and run the new Docker image on the host
+                        sh """
+                        docker pull ${DOCKER_IMAGE} &&
+                        docker stop ${CONTAINER_NAME} || true &&
+                        docker rm ${CONTAINER_NAME} || true &&
+                        docker run -d --name ${CONTAINER_NAME} -p 8081:80 -e ASPNETCORE_URLS="http://0.0.0.0:80" ${DOCKER_IMAGE}
+                        """
+                        echo "Deployment complete."
+                    } catch (Exception e) {
+                        echo "Error occurred during deployment: ${e.getMessage()}"
+                        throw e // rethrow the error to stop the pipeline if something goes wrong
+                    }
+                }
+            }
+        }
+    }
+}
