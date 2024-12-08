@@ -38,7 +38,6 @@ namespace PrintWeb.Controllers
             return View(paperTypes);
         }
 
-        // Xử lý thanh toán
         [HttpPost]
         public IActionResult ProcessPayment(int paperTypeId, int quantity)
         {
@@ -79,17 +78,16 @@ namespace PrintWeb.Controllers
             // Xử lý số lượng giấy (bao gồm giấy A3)
             int pagesToAdd = paperType.PaperTypeId == 2 ? quantity * 2 : quantity; // Giả sử PaperTypeId == 2 là giấy A3
 
-            // Tìm bản ghi giấy của sinh viên
+            // Cập nhật giấy cho sinh viên
             var paperStudent = _context.DetailPaperStudents
                 .FirstOrDefault(d => d.StudentId == studentId && d.PaperTypeId == paperTypeId);
+
             if (paperStudent != null)
             {
-                // Nếu đã có bản ghi, cập nhật số lượng giấy
                 paperStudent.Quantity += pagesToAdd;
             }
             else
             {
-                // Nếu chưa có bản ghi, tạo mới
                 _context.DetailPaperStudents.Add(new DetailPaperStudent
                 {
                     StudentId = studentId,
@@ -98,14 +96,22 @@ namespace PrintWeb.Controllers
                 });
             }
 
-            // Lưu lịch sử thanh toán vào bảng PaymentRecord
-            _context.PaymentRecords.Add(new PaymentRecord
+            // Tạo bản ghi mua giấy
+            var buyPaperLog = new BuyPaperLog
             {
-                PaymentId = Guid.NewGuid().ToString(),
                 StudentId = studentId,
-                Amount = totalAmount,
-                PaymentMethod = 1, // 1 = Trả qua tài khoản
-                PaymentDate = DateTime.Now
+                DateBuy = DateTime.Now,
+                TotalBuy = totalAmount
+            };
+            _context.BuyPaperLogs.Add(buyPaperLog);
+            _context.SaveChanges(); // Lưu trước để có ID
+
+            // Thêm chi tiết mua giấy
+            _context.DetailBuyPaperLogs.Add(new DetailBuyPaperLog
+            {
+                BuyPaperLogId = buyPaperLog.BuyPaperLogId,
+                PaperTypeId = paperTypeId,
+                PaperBuy = quantity
             });
 
             // Trừ số dư tài khoản sinh viên
@@ -115,31 +121,42 @@ namespace PrintWeb.Controllers
             TempData["SuccessMessage"] = "Thanh toán thành công! Số lượng giấy đã được cập nhật.";
             return RedirectToAction("BuyPaper");
         }
-        // Thêm vào Controller
-        public IActionResult PaymentHistory()
+
+        public IActionResult PaymentHistory(int studentId)
         {
-            var studentId = User.Identity?.Name;
-            if (string.IsNullOrEmpty(studentId))
+            // Chuyển đổi studentId từ string thành int
+            var studentIdFromIdentity = User.Identity?.Name;
+            int studentIdInt;
+
+            if (string.IsNullOrEmpty(studentIdFromIdentity) || !int.TryParse(studentIdFromIdentity, out studentIdInt))
             {
                 return RedirectToAction("Login", "Accounts");
             }
 
-            var student = _context.Students.FirstOrDefault(s => s.StudentId == studentId);
+            // Lấy sinh viên từ cơ sở dữ liệu với studentId là kiểu int
+            var student = _context.Students.Find(studentIdInt);
             if (student == null)
             {
-                TempData["ErrorMessage"] = "Không tìm thấy thông tin sinh viên.";
-                return RedirectToAction("Index", "Home");
+                return NotFound("Không tìm thấy sinh viên.");
             }
 
-            // Lấy lịch sử thanh toán của sinh viên
-            var paymentHistory = _context.PaymentRecords
-                .Where(pr => pr.StudentId == studentId)
-                .OrderByDescending(pr => pr.PaymentDate)
-                .ToList();
+            // Lấy các bản ghi mua giấy của sinh viên
+            var buyPaperLogs = _context.BuyPaperLogs.Where(b => b.StudentId == studentIdInt).ToList();
 
-            ViewData["Student"] = student;
-            return View(paymentHistory);
+            // Lấy chi tiết của từng BuyPaperLog
+            foreach (var log in buyPaperLogs)
+            {
+                log.Details = _context.DetailBuyPaperLogs.Where(d => d.BuyPaperLogId == log.Id).ToList();
+            }
+
+            // Truyền dữ liệu vào ViewBag
+            ViewBag.Student = student;
+            ViewBag.BuyPaperLogs = buyPaperLogs;
+
+            return View();
         }
+
+
 
     }
 }

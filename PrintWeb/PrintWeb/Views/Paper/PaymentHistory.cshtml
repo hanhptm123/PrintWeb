@@ -1,10 +1,8 @@
-﻿@model IEnumerable<PrintWeb.Data.PaymentRecord>
-
-@{
-    ViewData["Title"] = "Lịch sử thanh toán";
+﻿@{
+    ViewData["Title"] = "Lịch sử mua giấy";
 }
 
-<h2 class="mb-4">Lịch sử thanh toán</h2>
+<h2 class="mb-4">Lịch sử mua giấy</h2>
 
 @if (TempData["ErrorMessage"] != null)
 {
@@ -29,32 +27,39 @@
     </div>
 </div>
 
-<h4>Danh sách thanh toán</h4>
+<h4>Chi tiết lịch sử mua giấy</h4>
 <table class="table table-bordered">
     <thead>
         <tr>
-            <th>Ngày thanh toán</th>
-            <th>Số tiền</th>
-            <th>Phương thức thanh toán</th>
+            <th>Ngày mua</th>
+            <th>Tổng số tiền</th>
+            <th>Chi tiết giấy</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var payment in Model)
+        @if (ViewBag.BuyPaperLogs == null || !ViewBag.BuyPaperLogs.Any())
         {
             <tr>
-                <td>@payment.PaymentDate.ToString("dd/MM/yyyy HH:mm:ss")</td>
-                <td>@string.Format("{0:C}", payment.Amount)</td>
-                <td>
-                    @if (payment.PaymentMethod == 1)
-                    {
-                        @:Trả qua tài khoản
-                    }
-                    else
-                    {
-                        @:Phương thức khác
-                    }
-                </td>
+                <td colspan="3" class="text-center">Không có giao dịch nào.</td>
             </tr>
+        }
+        else
+        {
+            @foreach (var log in ViewBag.BuyPaperLogs)
+            {
+                <tr>
+                    <td>@log.DateBuy.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                    <td>@string.Format("{0:C}", log.TotalBuy)</td>
+                    <td>
+                        <ul>
+                            @foreach (var detail in log.Details)
+                            {
+                                <li>@detail.PaperTypeName - @detail.PaperBuy tờ</li>
+                            }
+                        </ul>
+                    </td>
+                </tr>
+            }
         }
     </tbody>
 </table>
