@@ -167,14 +167,17 @@ namespace PrintWeb.Controllers
         {
             return View();
         }
+
         public IActionResult Logout()
         {
             HttpContext.SignOutAsync();
             return View("Login");
         }
+
         [HttpPost]
         public IActionResult Login(string accountid, string password)
         {
+            // Kiểm tra thông tin đăng nhập
             var account = _context.Accounts.Where(t => t.AccountId == accountid && t.Password == password).FirstOrDefault<Account>();
 
             if (account == null)
@@ -182,19 +185,30 @@ namespace PrintWeb.Controllers
                 TempData["ErrorMessage"] = "Invalid username or password.";
                 return RedirectToAction("Login");
             }
+
             TempData["SuccessMessage"] = "Login successful! Redirecting...";
 
+            // Lưu mã tài khoản vào session
+            HttpContext.Session.SetString("AccountId", account.AccountId); // Lưu mã tài khoản vào session
+
+            // Tạo danh sách claims cho xác thực
             var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, account.AccountId),
-                new Claim(ClaimTypes.Role, account.Role),
-            };
+    {
+        new Claim(ClaimTypes.Name, account.AccountId),
+        new Claim(ClaimTypes.Role, account.Role),
+    };
+
             var claimsIdentity = new ClaimsIdentity(
-            claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            // Đăng nhập với claims và lưu vào cookie
             HttpContext.SignInAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme,
-            new ClaimsPrincipal(claimsIdentity));
-            return RedirectToAction("Login");
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity));
+
+            // Điều hướng về trang chính hoặc trang bạn muốn
+            return RedirectToAction("Index", "Home");
         }
+
     }
 }
