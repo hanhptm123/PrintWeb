@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PrintWeb.Data;
+using X.PagedList;
 
 namespace PrintWeb.Controllers
 {
@@ -19,12 +20,39 @@ namespace PrintWeb.Controllers
         }
 
         // GET: PrintingLogs
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? page)
         {
-            var printwebContext = _context.PrintingLogs.Include(p => p.Document).Include(p => p.PaperType).Include(p => p.Printer).Include(p => p.Student);
-            return View(await printwebContext.ToListAsync());
-        }
+            var userId = User.FindFirstValue(ClaimTypes.Name);
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["ErrorMessage"] = "You must log in to view printing logs.";
+                return RedirectToAction("Login", "Accounts");
+            }
 
+            int pageSize = 3;
+            int currentPage = page ?? 1;
+
+            var logsQuery = _context.PrintingLogs
+    .AsNoTracking()
+    .Include(pl => pl.Student)
+    .Include(pl => pl.Printer)
+    .Include(pl => pl.Document)
+    .Include(pl => pl.PaperType)
+    .Where(pl => pl.StudentId == userId)
+    .OrderByDescending(pl => pl.StartTime);
+
+            var logs = await logsQuery
+                .Skip((currentPage - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            // Lấy tổng số trang
+            var totalItems = await logsQuery.CountAsync();
+            var pagedList = new StaticPagedList<PrintingLog>(logs, currentPage, pageSize, totalItems);
+
+            return View(pagedList);
+
+        }
         // GET: PrintingLogs/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -50,7 +78,7 @@ namespace PrintWeb.Controllers
         // GET: PrintingLogs/Create
         public IActionResult Create()
         {
-            var accountId = User.Identity.Name; // Assume the logged-in user's AccountId is stored in User.Identity.Name
+            var accountId = User.Identity.Name;
             var studentId = _context.Accounts
                 .Where(a => a.AccountId == accountId)
                 .Select(a => a.AccountNavigation.StudentId)
@@ -58,41 +86,34 @@ namespace PrintWeb.Controllers
 
             if (studentId == null)
             {
-                return Unauthorized(); // Handle cases where StudentId cannot be retrieved
+                return Unauthorized();
             }
 
-            // Filter documents for the current student only
+            // Lọc tài liệu của sinh viên hiện tại
             var documents = _context.Documents
                 .Where(d => d.StudentId == studentId)
                 .Select(d => new { d.DocumentId, d.FileName });
 
-            // Filter printers with status "Ready"
+            // Lọc máy in có trạng thái 'Ready'
             var readyPrinters = _context.Printers
                 .Where(p => p.Status == "Ready")
                 .Select(p => new { p.PrinterId, DisplayName = $"{p.Brand} {p.Model} (Building {p.BuildingName} - Room {p.RoomNumber})" });
 
             ViewData["DocumentId"] = new SelectList(documents, "DocumentId", "FileName");
             ViewData["PaperTypeId"] = new SelectList(_context.PaperTypes, "PaperTypeId", "PaperTypeName");
-            ViewData["PrinterId"] = new SelectList(readyPrinters, "PrinterId", "DisplayName");
-            ViewData["ColoredOptions"] = new SelectList(new[] { "Yes", "No" }); // Option for Colored
-            ViewData["IsTwoSideOptions"] = new SelectList(new[]
-            {
-        new { Value = true, Text = "Yes" },
-        new { Value = false, Text = "No" }
-    }, "Value", "Text");
+            ViewData["PrinterId"] = new SelectList(readyPrinters, "PrinterId", "DisplayName");  // Ensure this is correctly populated
+            ViewData["ColoredOptions"] = new SelectList(new[] { "Yes", "No" });
+            ViewData["IsTwoSideOptions"] = new SelectList(new[] { new { Value = true, Text = "Yes" }, new { Value = false, Text = "No" } }, "Value", "Text");
 
             return View();
         }
-
-
-
 
         // POST: PrintingLogs/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("DocumentId,PrinterId,PaperTypeId,Colored,Quantity,IsTwoSide")] PrintingLog printingLog)
         {
-            var accountId = User.Identity.Name; // Assume the logged-in user's AccountId is stored in User.Identity.Name
+            var accountId = User.Identity.Name;
             var studentId = _context.Accounts
                 .Where(a => a.AccountId == accountId)
                 .Select(a => a.AccountNavigation.StudentId)
@@ -100,13 +121,13 @@ namespace PrintWeb.Controllers
 
             if (studentId == null)
             {
-                return Unauthorized(); // Handle cases where StudentId cannot be retrieved
+                return Unauthorized();
             }
 
             printingLog.StudentId = studentId;
-            printingLog.StartTime = DateTime.Now; // Set StartTime to current time
-            printingLog.EndTime = printingLog.StartTime.Value.AddMinutes(10); // Set EndTime to StartTime + 10 minutes
-            printingLog.Status = "Completed"; // Set Status to always "Completed"
+            printingLog.StartTime = DateTime.Now;
+            printingLog.EndTime = printingLog.StartTime.Value.AddMinutes(10);
+            printingLog.Status = "Completed";
 
             // Update quantity in DetailPaperStudent
             var detailPaper = _context.DetailPaperStudents
@@ -114,7 +135,7 @@ namespace PrintWeb.Controllers
 
             if (detailPaper == null || detailPaper.Quantity < printingLog.Quantity)
             {
-                ModelState.AddModelError(string.Empty, "Insufficient paper quantity. Please add more paper.");
+                ModelState.AddModelError(string.Empty, "Insufficient paper quantity.");
             }
             else
             {
@@ -131,16 +152,13 @@ namespace PrintWeb.Controllers
             // Reload select lists and options for the view
             ViewData["DocumentId"] = new SelectList(_context.Documents, "DocumentId", "FileName", printingLog.DocumentId);
             ViewData["PaperTypeId"] = new SelectList(_context.PaperTypes, "PaperTypeId", "PaperTypeName", printingLog.PaperTypeId);
-            ViewData["PrinterId"] = new SelectList(_context.Printers, "PrinterId", "PrinterId", printingLog.PrinterId);
+            ViewData["PrinterId"] = new SelectList(_context.Printers.Where(p => p.Status == "Ready"), "PrinterId", "DisplayName", printingLog.PrinterId);
             ViewData["ColoredOptions"] = new SelectList(new[] { "Yes", "No" }, printingLog.Colored);
-            ViewData["IsTwoSideOptions"] = new SelectList(new[]
-            {
-        new { Value = true, Text = "Yes" },
-        new { Value = false, Text = "No" }
-    }, "Value", "Text", printingLog.IsTwoSide);
+            ViewData["IsTwoSideOptions"] = new SelectList(new[] { new { Value = true, Text = "Yes" }, new { Value = false, Text = "No" } }, "Value", "Text", printingLog.IsTwoSide);
 
             return View(printingLog);
         }
+
 
         // GET: PrintingLogs/Edit/5
         public async Task<IActionResult> Edit(int? id)
