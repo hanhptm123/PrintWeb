@@ -2,6 +2,10 @@
 <head>
     <title>Website Printing of The SaiGon International University</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+   
+
     <style>
         body {
         margin: 0;
@@ -128,6 +132,8 @@
                 <button type="button" class="btn btn-blue" onclick="window.location.href='@Url.Action("Index", "Profile")'">View Profile</button>
                 <button class="btn btn-yellow" onclick="location.href='/PrintingLogs/Create'">Print Documents</button>
                 <button class="btn btn-blue" onclick="location.href='/PrintingLogs/Index'">View Printing History</button>
+                <button class="btn btn-yellow" onclick="location.href='/Documents/Create'">Upload Document</button>
+                <button class="btn btn-blue" onclick="location.href='/Documents/Index'">Your Document</button>
             }
             <button class="btn btn-yellow" onclick="location.href='/Printers/Index'">View Printers</button>
             <button class="btn btn-blue btn-shadow">Buy paper</button>

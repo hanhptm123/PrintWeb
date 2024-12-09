@@ -1,0 +1,146 @@
+﻿@model PrintWeb.Data.Document
+
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "~/Views/Shared/_Homepage.cshtml";
+}
+
+<h1 class="text-center text-danger my-4">Delete Document</h1>
+
+<div class="container custom-container">
+
+    <div class="document-info">
+        <h4 class="text-primary">Document Details</h4>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-4">
+                @Html.DisplayNameFor(model => model.FileName)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.FileName)
+            </dd>
+
+            <dt class="col-sm-4">
+                @Html.DisplayNameFor(model => model.FileType)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.FileType)
+            </dd>
+
+            <dt class="col-sm-4">
+                @Html.DisplayNameFor(model => model.UploadedAt)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.UploadedAt)
+            </dd>
+
+            <dt class="col-sm-4">
+                @Html.DisplayNameFor(model => model.Student)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.Student.StudentId)
+            </dd>
+        </dl>
+    </div>
+
+    <div class="form-actions text-center">
+        <!-- Icon for Delete -->
+        <form asp-action="Delete" class="d-inline-block">
+            <input type="hidden" asp-for="DocumentId" />
+            <button type="submit" class="btn btn-danger btn-lg">
+                <i class="fas fa-trash-alt"></i> <!-- Delete icon -->
+            </button>
+        </form>
+
+        <!-- Icon for Back to List -->
+        <a asp-action="Index" class="btn btn-secondary btn-lg d-inline-block mt-2">
+            <i class="fas fa-arrow-left"></i> <!-- Back to list icon -->
+        </a>
+    </div>
+</div>
+
+<!-- CSS -->
+<style>
+    .custom-container {
+        width: 100%;
+        max-width: 900px;
+        max-height: 400px; /* Giới hạn chiều cao không quá 400px */
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        overflow: hidden; /* Không cho phép cuộn */
+    }
+
+    .document-info {
+        background-color: #fff;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+
+    dl.row dt {
+        font-weight: bold;
+        color: #495057;
+        font-size: 1.1em;
+    }
+
+    dl.row dd {
+        color: #6c757d;
+        font-size: 1.05em;
+    }
+
+    h4 {
+        font-size: 1.3em;
+        color: #007bff;
+    }
+
+    .form-actions {
+        margin-top: 30px;
+    }
+
+        .form-actions .btn {
+            padding: 12px 25px;
+            font-size: 1.5em; /* Tăng kích thước font cho icon */
+            border-radius: 25px;
+            min-width: 100px;
+        }
+
+        .form-actions .btn-danger {
+            background-color: #dc3545;
+            border: 1px solid #dc3545;
+            color: white;
+        }
+
+        .form-actions .btn-secondary {
+            background-color: #6c757d;
+            border: 1px solid #6c757d;
+            color: white;
+        }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .btn-lg {
+        font-size: 1.1em;
+        padding: 10px 25px;
+    }
+
+    .mt-2 {
+        margin-top: 10px;
+    }
+
+    .text-danger {
+        color: #dc3545;
+    }
+
+    /* Font Awesome Icon Style */
+    .fas {
+        font-size: 1.5em; /* Tăng kích thước icon */
+    }
+</style>
+
+<!-- Add Font Awesome CDN -->
+<script src="https://kit.fontawesome.com/a076d05399.js"></script>

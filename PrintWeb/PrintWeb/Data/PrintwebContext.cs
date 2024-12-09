@@ -40,7 +40,6 @@ public partial class PrintwebContext : DbContext
     public virtual DbSet<Student> Students { get; set; }
 
     
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Account>(entity =>
@@ -162,7 +161,6 @@ public partial class PrintwebContext : DbContext
 
             entity.HasOne(d => d.Student).WithMany(p => p.Documents)
                 .HasForeignKey(d => d.StudentId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Document_Student");
         });
 
@@ -202,12 +200,10 @@ public partial class PrintwebContext : DbContext
 
             entity.HasOne(d => d.PaymentMethodNavigation).WithMany(p => p.PaymentRecords)
                 .HasForeignKey(d => d.PaymentMethod)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_PaymentRecords_PaymentMethod");
 
             entity.HasOne(d => d.Student).WithMany(p => p.PaymentRecords)
                 .HasForeignKey(d => d.StudentId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_PaymentRecords_Student");
         });
 

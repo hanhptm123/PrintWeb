@@ -1,0 +1,169 @@
+﻿@model X.PagedList.IPagedList<PrintWeb.Data.Document>
+@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Homepage.cshtml";
+}
+
+<h1 class="text-center my-4 text-primary">Your Documents</h1>
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">Create New</a>
+</p>
+
+<div class="table-responsive mx-auto">
+    <table class="table table-striped table-bordered table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Icon</th>
+                <th>@Html.DisplayNameFor(model => model.First().FileName)</th>
+                <th>@Html.DisplayNameFor(model => model.First().FileType)</th>
+                <th>@Html.DisplayNameFor(model => model.First().UploadedAt)</th>
+                <th>@Html.DisplayNameFor(model => model.First().Student)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @if (item.FileType.ToLower() == "pdf")
+                        {
+                            <i class="fas fa-file-pdf text-danger"></i>
+                        }
+                        else if (item.FileType.ToLower() == "docx")
+                        {
+                            <i class="fas fa-file-word text-primary"></i>
+                        }
+                        else
+                        {
+                            <i class="fas fa-file"></i>
+                        }
+                    </td>
+                    <td>@Html.DisplayFor(modelItem => item.FileName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.FileType)</td>
+                    <td>@Html.DisplayFor(modelItem => item.UploadedAt)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Student.StudentId)</td>
+                    <td>
+                        <a class="btn-link btn-sm" asp-action="Delete" asp-route-id="@item.DocumentId">
+                            <i class="fas fa-trash-alt text-danger"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div style="display: flex; justify-content: center;">
+    @Html.PagedListPager(Model, page => Url.Action("Index", "Documents", new { page = page }), new PagedListRenderOptions()
+{
+    DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+    DisplayLinkToLastPage = PagedListDisplayMode.Always,
+    DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+    DisplayLinkToNextPage = PagedListDisplayMode.Always,
+    DisplayLinkToIndividualPages = true,
+    MaximumPageNumbersToDisplay = 10,
+    DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+    LinkToFirstPageFormat = "First",
+    LinkToPreviousPageFormat = "<",
+    LinkToNextPageFormat = ">",
+    LinkToLastPageFormat = "Last",
+    PageClasses = new string[] { "page-item", "page-link" },
+    ContainerDivClasses = new string[] { "pagination-container" },
+    UlElementClasses = new string[] { "pagination" },
+    LiElementClasses = new string[] { "page-item" }
+})
+</div>
+
+<style>
+    
+    .table-responsive {
+        max-width: 961.44px;
+        max-height: 500px; /* Giảm chiều cao */
+        overflow: auto;
+        margin: 0 auto;
+    }
+
+    .table {
+        width: 100%;
+        height: auto; /* Chiều cao tự động để tránh tràn */
+    }
+
+        .table th, .table td {
+            vertical-align: middle;
+            padding: 12px;
+        }
+
+        .table th {
+            text-align: center;
+            background-color: #007bff;
+            color: white;
+        }
+
+        .table td {
+            text-align: center;
+            background-color: #f9f9f9;
+        }
+
+    .table-hover tbody tr:hover {
+        background-color: #e0e0e0;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+        font-size: 16px;
+        list-style-type: none;
+    }
+
+    .pagination-container {
+        margin-top: 20px;
+    }
+
+    .pagination .page-item {
+        margin: 0 5px;
+        border-radius: 50px;
+    }
+
+    .pagination .page-link {
+        border-radius: 50px;
+        padding: 10px 16px;
+        color: #007bff;
+        background-color: #f0f0f0;
+        border: 1px solid #007bff;
+        text-decoration: none;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #007bff;
+        color: white;
+        border-color: #007bff;
+        font-weight: bold;
+    }
+
+    .pagination .page-item:hover .page-link {
+        background-color: #007bff;
+        color: white;
+        border-color: #0056b3;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        background-color: #e9ecef;
+        color: #6c757d;
+        border-color: #dee2e6;
+        pointer-events: none;
+    }
+    /* Đổi màu và căn giữa tiêu đề */
+    h1.text-center.my-4.text-primary {
+        color: #007bff;
+        text-align: center;
+        font-weight: bold;
+    }
+</style>
+
+
