@@ -1,0 +1,186 @@
+﻿@using X.PagedList.Mvc.Core;
+@using X.PagedList
+@model X.PagedList.IPagedList<PrintWeb.Data.PrintingLog>
+
+@addTagHelper *,Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Printing Logs";
+}
+
+<style>
+    /* Custom styles for the table */
+    .table th, .table td {
+        vertical-align: middle; /* Aligns content vertically */
+        padding: 15px; /* Adds more space */
+    }
+
+    .table th {
+        text-align: center; /* Centers column headers */
+        background-color: #007bff; /* Light blue background for headers */
+        color: white; /* White text for headers */
+    }
+
+    .table td {
+        text-align: center; /* Centers data content */
+        background-color: #f9f9f9; /* Light gray background for data cells */
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #e0e0e0; /* Highlights rows on hover with light gray */
+    }
+
+    .table-responsive {
+        margin-top: 20px; /* Adds spacing around the table */
+    }
+
+    thead.thead-dark {
+        background-color: #343a40;
+        color: white; /* Dark background for the header */
+    }
+
+    h1 {
+        color: #007bff; /* Light blue color for the title */
+        text-align: center; /* Center the title */
+    }
+
+    /* Pagination container */
+    .pagination {
+        display: flex;
+        justify-content: center; /* Center align pagination */
+        margin-top: 20px;
+        font-size: 16px;
+        list-style-type: none; /* Remove default bullets */
+        padding: 0; /* Remove default padding */
+    }
+
+    .pagination-container {
+        margin-top: 20px;
+    }
+
+    /* Pagination items styling */
+    .pagination .page-item {
+        margin: 0 5px;
+        border-radius: 50px; /* Round corners for pagination buttons */
+    }
+
+    .pagination .page-link {
+        border-radius: 50px; /* Round the edges of the page links */
+        padding: 10px 16px; /* Add padding inside the buttons */
+        color: #007bff; /* Blue color for text */
+        background-color: #f0f0f0; /* Light gray background */
+        border: 1px solid #007bff; /* Border color */
+        transition: all 0.3s ease-in-out; /* Smooth transition for hover effects */
+        text-decoration: none; /* Remove underline from links */
+    }
+
+    /* Active page styles */
+    .pagination .page-item.active .page-link {
+        background-color: #007bff; /* Blue background for active page */
+        color: white; /* White text color */
+        border-color: #007bff; /* Border color to match active background */
+        font-weight: bold; /* Bold text for the active page */
+    }
+
+    /* Hover effect for pagination links */
+    .pagination .page-item:hover .page-link {
+        background-color: #007bff; /* Change to blue on hover */
+        color: white; /* White text when hovered */
+        border-color: #0056b3; /* Darker blue border on hover */
+    }
+
+    /* Disabled items (e.g., first/last page on edge cases) */
+    .pagination .page-item.disabled .page-link {
+        background-color: #e9ecef; /* Light gray background */
+        color: #6c757d; /* Gray text for disabled links */
+        border-color: #dee2e6; /* Light gray border */
+        pointer-events: none; /* Disable pointer events */
+    }
+
+    /* Pagination ellipses (...) style */
+    .pagination .page-item.disabled .page-link {
+        pointer-events: none; /* Disable click on ellipses */
+    }
+</style>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<div class="col-12 text-center">
+    <h1>Printing History</h2>
+</div>
+<div class="container mt-5">
+    <div class="row mb-3">
+        <div class="col-md-12 text-end">
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-hover table-bordered align-middle">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th>Document</th>
+                        <th>PaperType</th>
+                        <th>Printer</th>
+                        <th>Colored</th>
+                        <th>StartTime</th>
+                        <th>EndTime</th>
+                        <th>Quantity</th>
+                        <th>isTwoSide</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                            <tr class="text-center">
+                                <td>@Html.DisplayFor(modelItem => item.Document.FileName)</td>
+                                <td>@Html.DisplayFor(modelItem => item.PaperType.PaperTypeName)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Printer.Brand)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Colored)</td>
+                                <td>@Html.DisplayFor(modelItem => item.StartTime)</td>
+                                <td>@Html.DisplayFor(modelItem => item.EndTime)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
+                                <td>
+                                @if (item.IsTwoSide ?? false)
+                                {
+                                            <span class="badge bg-success">Yes</span>
+                                }
+                                else
+                                {
+                                            <span class="badge bg-danger">No</span>
+                                }
+                                </td>
+                                <td>@Html.DisplayFor(modelItem => item.Status)</td>
+                            </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div style="display: flex; justify-content: center;">
+                @Html.PagedListPager(Model, page => Url.Action("Index", "PrintingLogs", new { page = page }), new PagedListRenderOptions()
+           {
+               DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+               DisplayLinkToLastPage = PagedListDisplayMode.Always,
+               DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+               DisplayLinkToNextPage = PagedListDisplayMode.Always,
+               DisplayLinkToIndividualPages = true,
+               MaximumPageNumbersToDisplay = 10,
+               DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+               LinkToFirstPageFormat = "First",
+               LinkToPreviousPageFormat = "<",
+               LinkToNextPageFormat = ">",
+               LinkToLastPageFormat = "Last",
+               PageClasses = new string[] { "page-item", "page-link" },
+               ContainerDivClasses = new string[] { "pagination-container" },
+               UlElementClasses = new string[] { "pagination" },
+               LiElementClasses = new string[] { "page-item" }
+           })
+            </div>
+
+
+        </div>
+    </div>
+</div>
+

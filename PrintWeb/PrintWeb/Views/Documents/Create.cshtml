@@ -1,0 +1,121 @@
+﻿@model PrintWeb.Data.Document
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Homepage.cshtml";
+}
+
+<h1 class="text-center my-4 text-primary">Upload Document</h1>
+
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <!-- StudentId: Sử dụng session để lấy AccountId -->
+            <div class="form-group">
+                <label for="StudentId" class="control-label">Student ID</label>
+                <input type="text" id="StudentId" class="form-control" value="@ViewData["StudentId"]" readonly />
+            </div>
+
+            <!-- File upload: Chọn file PDF hoặc DOCX -->
+            <div class="form-group">
+                <label for="file" class="control-label">Choose File (PDF or DOCX):</label>
+                <input type="file" name="file" class="form-control" required />
+                <span class="text-danger">@TempData["FileError"]</span>
+            </div>
+
+            <!-- File Name: Hiển thị tên file sau khi chọn -->
+            <div class="form-group">
+                <label for="FileName" class="control-label">File Name</label>
+                <input type="text" id="FileName" class="form-control" name="FileName" readonly />
+            </div>
+
+            <!-- File Type: Hiển thị loại file PDF hoặc DOCX -->
+            <div class="form-group">
+                <label for="FileType" class="control-label">File Type</label>
+                <input type="text" id="FileType" class="form-control" name="FileType" readonly />
+            </div>
+
+            <!-- Uploaded At: Hiển thị thời gian tải lên -->
+            <div class="form-group">
+                <label for="UploadedAt" class="control-label">Uploaded At</label>
+                <input type="text" id="UploadedAt" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")" readonly />
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Upload" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Script để hiển thị tên file và loại file khi chọn
+        document.querySelector('input[type="file"]').addEventListener('change', function (event) {
+            var fileInput = event.target;
+            var fileName = fileInput.files[0]?.name;
+            var fileType = fileInput.files[0]?.type;
+
+            if (fileName) {
+                document.getElementById('FileName').value = fileName;
+            }
+
+            if (fileType) {
+                // Kiểm tra loại file và hiển thị "PDF" hoặc "DOCX"
+                if (fileType === "application/pdf") {
+                    document.getElementById('FileType').value = "PDF";
+                } else if (fileType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+                    document.getElementById('FileType').value = "DOCX";
+                }
+            }
+        });
+    </script>
+}
+<style>
+    /* Đổi màu và căn giữa tiêu đề */
+    h1.text-center.my-4.text-primary {
+        color: #007bff;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    /* Căn giữa form */
+    .row {
+        display: flex;
+        justify-content: center; /* Căn giữa theo chiều ngang */
+    }
+
+    .col-md-4 {
+        display: flex;
+        justify-content: center; /* Căn giữa form trong cột */
+    }
+
+    /* Khoảng cách giữa các phần tử trong form */
+    .form-group {
+        margin-bottom: 20px; /* Thêm khoảng cách dưới mỗi form group */
+    }
+
+    /* Điều chỉnh kích thước và màu của nút Upload */
+    .btn-primary {
+        width: auto; /* Đặt chiều rộng tự động */
+        padding: 10px 20px; /* Thêm khoảng cách cho nút */
+        background-color: #007bff; /* Màu xanh dương */
+        border-color: #007bff; /* Đổi màu viền nút thành xanh dương */
+    }
+
+        /* Thay đổi màu của nút khi hover */
+        .btn-primary:hover {
+            background-color: #0056b3; /* Màu xanh dương đậm khi di chuột vào nút */
+            border-color: #0056b3;
+        }
+</style>
+

@@ -1,0 +1,292 @@
+﻿@model IEnumerable<PrintWeb.Data.PaperType>
+
+@{
+    ViewData["Title"] = "Buy Paper";
+}
+
+<h2 class="mb-4">Buy More Paper</h2>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<div class="Pay">
+    <div class="card mb-4">
+        <div class="card-body">
+            <h4>Student Information</h4>
+            <p><strong>Student ID:</strong> @ViewBag.Student.StudentId</p>
+            <p><strong>Student Name:</strong> @ViewBag.Student.StudentName</p>
+            <p><strong>Account Balance:</strong> @string.Format("{0:C}", ViewBag.Student.AccountBalance)</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h4>Select Paper Type</h4>
+            <form method="post" asp-action="ProcessPayment">
+                <div id="paperList">
+                    <div class="form-group mb-3 paper-item">
+                        <label for="paperTypeId">Paper Type:</label>
+                        <select name="paperTypeIds[]" class="form-control paper-type-dropdown" required>
+                            <option value="">-- Select Paper Type --</option>
+                            @foreach (var paperType in Model)
+                            {
+                                <option value="@paperType.PaperTypeId" data-price="@paperType.Price">
+                                    @paperType.PaperTypeName - @string.Format("{0:C}", paperType.Price) / page
+                                </option>
+                            }
+                        </select>
+                        <label for="quantity">Quantity:</label>
+                        <input type="number" name="quantities[]" class="form-control quantity-input" min="1" required />
+                        <hr />
+                        <button type="button" class="btn btn-danger btn-remove">Remove</button>
+                    </div>
+                </div>
+
+                <button type="button" id="addPaperButton" class="btn btn-secondary mb-3">Add Paper Type</button>
+
+                <div class="form-group mb-3">
+                    <label for="totalAmount">Total Amount:</label>
+                    <input type="text" id="totalAmount" class="form-control" readonly />
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Pay</button>
+                    <button type="submit" class="btn btn-primary">
+                        <a asp-action="Index" asp-controller="Home" class="text-white text-decoration-none rounded">Back</a>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function calculateTotal() {
+        let total = 0;
+        document.querySelectorAll('.paper-item').forEach(item => {
+            const price = parseFloat(item.querySelector('.paper-type-dropdown').selectedOptions[0].getAttribute('data-price')) || 0;
+            const quantity = parseInt(item.querySelector('.quantity-input').value) || 0;
+            total += price * quantity;
+        });
+        document.getElementById('totalAmount').value = total.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    }
+
+    document.getElementById('addPaperButton').addEventListener('click', () => {
+        const newItem = document.querySelector('.paper-item').cloneNode(true);
+        newItem.querySelector('.quantity-input').value = '';
+        document.getElementById('paperList').appendChild(newItem);
+    });
+
+    document.addEventListener('input', calculateTotal);
+    document.addEventListener('click', event => {
+        if (event.target.classList.contains('btn-remove')) {
+            event.target.closest('.paper-item').remove();
+            calculateTotal();
+        }
+    });
+</script>
+
+<style>
+    /* General Styles */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f9f9f9;
+        padding: 20px;
+        margin: 0;
+        position:relative;
+        display:block;
+    }
+
+    h2 {
+        color: #007bff;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    /* Alert Styles */
+    .alert {
+        margin-bottom: 20px;
+        font-size: 16px;
+        padding: 15px;
+        border-radius: 5px;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    /* Card Styles */
+    .card {
+        background-color: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+        .card-body h4 {
+            color: #343a40;
+            margin-bottom: 15px;
+        }
+
+        .card-body p {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+    /* Paper Item Styling */
+    #paperList {
+        margin-bottom: 20px;
+    }
+
+    .paper-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 15px;
+        background-color: #f8f9fa;
+    }
+
+        .paper-item label {
+            font-weight: bold;
+            margin-right: 10px;
+            align-items: center;
+        }
+
+    .paper-type-dropdown,
+    .quantity-input {
+        width: 30%;
+    }
+
+    .btn-remove {
+        background-color: #f44336;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+
+        .btn-remove:hover {
+            background-color: #e53935;
+        }
+
+    /* Add Paper Button */
+    #addPaperButton {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        width: fit-content;
+        margin-bottom:10px;
+    }
+
+        #addPaperButton:hover {
+            background-color: #218838;
+        }
+
+    /* Total Amount */
+    #totalAmount {
+        font-size: 18px;
+        padding: 10px;
+        width: 100%;
+        background-color: #e9ecef;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        margin-top:10px;
+    }
+
+    /* Form Group and Button */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            margin-right:10px;
+            margin-left:10px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 60%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            margin-bottom: 15px;
+        }
+
+            .form-group input:read-only {
+                background-color: #e9ecef;
+            }
+
+        /* Submit Button */
+        .form-group button {
+            width: fit-content;
+            margin: 10px;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+    }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+    /* Focus Effect */
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 8px rgba(0, 123, 255, 0.25);
+    }
+    .Pay{
+        height:auto;
+    }
+</style>

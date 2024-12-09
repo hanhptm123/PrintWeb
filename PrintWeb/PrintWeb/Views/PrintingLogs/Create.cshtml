@@ -1,0 +1,136 @@
+﻿@using System.Security.Claims
+@model PrintWeb.Data.PrintingLog
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Homepage.cshtml";
+}
+
+<h1 class="text-center">Create Pringting</h1>
+
+
+<!-- Alert Box for Errors -->
+<div class="alert alert-danger" role="alert" style="display: @(TempData["ErrorMessage"] != null ? "block" : "none");">
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <p>@TempData["ErrorMessage"]</p>
+    }
+</div>
+
+
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <form asp-action="Create" method="post" class="shadow-lg p-4 rounded bg-light">
+                <!-- Document Selection -->
+                <div class="form-group">
+                    <label asp-for="DocumentId" class="control-label">Document</label>
+                    <select asp-for="DocumentId" class="form-control" asp-items="ViewBag.DocumentId"></select>
+                    <span asp-validation-for="DocumentId" class="text-danger"></span>
+                </div>
+
+                <!-- Printer Selection -->
+                <div class="form-group">
+                    <label asp-for="PrinterId" class="control-label">Printer</label>
+                    <select asp-for="PrinterId" class="form-control" asp-items="ViewBag.PrinterId"></select>
+                    <span asp-validation-for="PrinterId" class="text-danger"></span>
+                </div>
+
+                <!-- Paper Type Selection -->
+                <div class="form-group">
+                    <label asp-for="PaperTypeId" class="control-label">Paper Type</label>
+                    <select asp-for="PaperTypeId" class="form-control" asp-items="ViewBag.PaperTypeId"></select>
+                    <span asp-validation-for="PaperTypeId" class="text-danger"></span>
+                </div>
+
+                <!-- Quantity Input -->
+                <div class="form-group">
+                    <label asp-for="Quantity" class="control-label">Quantity</label>
+                    <input asp-for="Quantity" class="form-control" type="number" min="1" />
+                    <span asp-validation-for="Quantity" class="text-danger"></span>
+                </div>
+
+                <!-- Colored Selection -->
+                <div class="form-group">
+                    <label class="control-label">Colored</label>
+                    <div>
+                        <label>
+                            <input type="radio" name="Colored" value="Yes" /> Yes
+                        </label>
+                        <label>
+                            <input type="radio" name="Colored" value="No" /> No
+                        </label>
+                    </div>
+                </div>
+
+                <!-- IsTwoSide Selection -->
+                <div class="form-group">
+                    <label class="control-label">Is Two-Sided</label>
+                    <div>
+                        <label>
+                            <input type="radio" name="IsTwoSide" value="true" /> Yes
+                        </label>
+                        <label>
+                            <input type="radio" name="IsTwoSide" value="false" /> No
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Hidden Fields -->
+                <input asp-for="StudentId" type="hidden" value="@User.FindFirstValue(ClaimTypes.Name)" />
+                <input asp-for="StartTime" type="hidden" value="@DateTime.Now" />
+                <input asp-for="EndTime" type="hidden" value="@DateTime.Now.AddMinutes(10)" />
+                <input asp-for="Status" type="hidden" value="Completed" />
+
+                <!-- Submit Button -->
+                <div class="form-group text-center">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="text-center">
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+<style>
+    .alert-danger {
+        border: 1px solid red;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .form-control {
+        margin-bottom: 15px;
+    }
+
+    .shadow-lg {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .bg-light {
+        background-color: #f8f9fa;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+</style>
