@@ -3,50 +3,62 @@
     <title>Website Printing of The SaiGon International University</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
     <style>
-        body {
+        html, body {
             margin: 0;
-            font-family: Arial, sans-serif;
+            padding: 0;
+            height: 100%; /* Đảm bảo chiều cao của toàn bộ trang */
+            display: flex;
+            flex-direction: column;
         }
+
         .header {
             background-color: #add8e6;
             padding: 10px;
             display: flex;
             align-items: center;
         }
-        .header img {
-            height: 80px;
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 24px;
-            font-weight: bold;
-            flex-grow: 1;
-            text-align: center;
-        }
+
+            .header img {
+                height: 80px;
+            }
+
+            .header h1 {
+                margin: 0;
+                font-size: 24px;
+                font-weight: bold;
+                flex-grow: 1;
+                text-align: center;
+            }
+
         .login-bar {
             background-color: #f1f1f1;
             padding: 10px;
             text-align: left;
             padding-left: 50px;
         }
-        .login-bar .login {
-            font-size: 16px;
-            display: inline-flex;
-            align-items: center;
-        }
-        .login-bar .login i {
-            margin-right: 5px;
-        }
+
+            .login-bar .login {
+                font-size: 16px;
+                display: inline-flex;
+                align-items: center;
+            }
+
+                .login-bar .login i {
+                    margin-right: 5px;
+                }
+
         .container {
+            flex: 1; /* Đảm bảo container chiếm hết không gian giữa header và footer */
             display: flex;
-            height: calc(100vh - 160px);
         }
+
         .sidebar {
             background-color: #1565c0;
             width: 200px;
             display: flex;
             flex-direction: column;
         }
+
         .btn {
             border: none;
             padding: 15px;
@@ -56,34 +68,39 @@
             width: 100%;
             color: white;
         }
+
         .btn-blue {
             background-color: #1565c0;
         }
+
         .btn-yellow {
             background-color: #ffd700;
             color: black;
         }
+
         .btn:hover {
             opacity: 0.8;
         }
+
         .content {
             flex-grow: 1;
             background-color: white;
             border: 1px solid #ccc;
             padding: 20px;
             margin: 10px;
+            overflow-y: auto; /* Thêm cuộn dọc khi nội dung vượt quá chiều cao */
         }
+
         .footer {
             background-color: #add8e6;
             text-align: center;
             padding: 10px;
-            position: absolute;
-            bottom: 0;
             width: 100%;
         }
-        .footer img {
-            height: 50px;
-        }
+
+            .footer img {
+                height: 50px;
+            }
 
         .btn-shadow {
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
@@ -123,12 +140,18 @@
 
     <div class="container">
         <div class="sidebar">
-            <button type="button" class="btn btn-blue" onclick="window.location.href='@Url.Action("Index", "Profile")'">View Profile</button>
-            <button class="btn btn-yellow">Print Documents</button>
-            <button class="btn btn-blue">View Printers</button>
-            <button class="btn btn-yellow">View Printing History</button>
-            <button class="btn btn-blue btn-shadow">Buy paper</button>
-            <button type="button" class="btn btn-blue" onclick="window.location.href='@Url.Action("AddBalance", "Payment")'">Deposit Money</button>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <button type="button" class="btn btn-blue" onclick="window.location.href='@Url.Action("Index", "Profile")'">View Profile</button>
+                <button class="btn btn-yellow" onclick="location.href='/PrintingLogs/Create'">Print Documents</button>
+                <button class="btn btn-blue" onclick="location.href='/PrintingLogs/Index'">View Printing History</button>
+                <button class="btn btn-yellow" onclick="location.href='/Documents/Create'">Upload Document</button>
+                <button class="btn btn-blue" onclick="location.href='/Documents/Index'">Your Document</button>
+                <button class="btn btn-yellow" onclick="location.href='/Paper/BuyPaper'">Buy Paper</button>
+                <button class="btn btn-blue" onclick="location.href='/Paper/PaymentHistory'">View Buy Paper History</button>
+                <button type="button" class="btn btn-yellow" onclick="window.location.href='@Url.Action("AddBalance", "Payment")'">Deposit Money</button>
+            }
+            <button class="btn btn-blue btn-shadow" onclick="location.href='/Printers/Index'">View Printers</button>
 
         </div>
         <div class="content">
@@ -139,5 +162,6 @@
         <img alt="University logo" src="https://www.adscientificindex.com/logos/7461.png" />
         <p>Copyright © belongs to The Saigon International University (SIU)</p>
     </div>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

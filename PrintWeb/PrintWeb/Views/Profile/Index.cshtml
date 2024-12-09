@@ -25,8 +25,35 @@
         </div>
     }
 </div>
+<div class="student-info-container">
+    <h3>Your paper</h3>
+    @if (ViewBag.PaperDetails != null && ViewBag.PaperDetails.Count > 0)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Paper Type</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var paper in ViewBag.PaperDetails)
+                {
+                    <tr>
+                        <td>@paper.PaperTypeName</td>
+                        <td>@paper.Quantity</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No paper information available.</p>
+    }
+</div>
 
-<a href="@Url.Action("Logout", "Account")" class="btn btn-logout">Logout</a>
+
 
 <script>
     function togglePasswordView() {
@@ -138,4 +165,22 @@
         outline: none;
         box-shadow: 0 0 0 2px rgba(217, 83, 79, 0.5);
     }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+
+        .table th, .table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .table th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+
 </style>

@@ -26,7 +26,9 @@ namespace PrintWeb.Controllers
             }
 
             var student = _context.Students
-                .Include(s => s.Account) 
+                .Include(s => s.Account)
+                .Include(s => s.DetailPaperStudents)
+                .ThenInclude(dps => dps.PaperType)
                 .FirstOrDefault(s => s.StudentId == accountId);
 
             if (student == null)
@@ -35,8 +37,20 @@ namespace PrintWeb.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            // Lấy thông tin giấy theo từng loại
+            var paperDetails = student.DetailPaperStudents
+                .Select(dps => new
+                {
+                    PaperTypeName = dps.PaperType.PaperTypeName,
+                    Quantity = dps.Quantity
+                })
+                .ToList();
+
+            ViewBag.PaperDetails = paperDetails;
+
             return View(student);
         }
+
         public IActionResult EditPassword()
         {
             return View();
