@@ -1,0 +1,15 @@
+﻿<div style="text-align: center; position: relative;">
+    <button id="completeButton"
+            onclick="redirectToComplete()"
+            style="position: absolute; top: 10px; left: 10px; padding: 10px 20px; font-size: 16px; cursor: pointer; opacity: 0; background-color: transparent; border: none;">
+        Complete
+    </button>
+    <img src="/images/QRCODE.jpg" alt="QR Code" width="420px" height="420px">
+</div>
+
+<script>
+    function redirectToComplete() {
+        // Redirect to the "Complete" page
+        window.location.href = '/Payment/Successfull';
+    }
+</script>
