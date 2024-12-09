@@ -132,11 +132,12 @@ namespace PrintWeb.Controllers
             // Update quantity in DetailPaperStudent
             var detailPaper = _context.DetailPaperStudents
                 .FirstOrDefault(d => d.StudentId == studentId && d.PaperTypeId == printingLog.PaperTypeId);
-
             if (detailPaper == null || detailPaper.Quantity < printingLog.Quantity)
             {
-                ModelState.AddModelError(string.Empty, "Insufficient paper quantity.");
+                TempData["ErrorMessage"] = "Insufficient paper quantity.";
+                return View();  // Đảm bảo bạn đang trả về lại cùng view hiện tại.
             }
+
             else
             {
                 detailPaper.Quantity -= printingLog.Quantity ?? 0;
