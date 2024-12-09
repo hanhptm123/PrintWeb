@@ -39,7 +39,7 @@ public partial class PrintwebContext : DbContext
 
     public virtual DbSet<Student> Students { get; set; }
 
-    
+  
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Account>(entity =>
@@ -66,9 +66,7 @@ public partial class PrintwebContext : DbContext
 
             entity.ToTable("BuyPaperLog");
 
-            entity.Property(e => e.BuyPaperLogId)
-                .ValueGeneratedNever()
-                .HasColumnName("BuyPaperLogID");
+            entity.Property(e => e.BuyPaperLogId).HasColumnName("BuyPaperLogID");
             entity.Property(e => e.DateBuy).HasColumnType("datetime");
             entity.Property(e => e.StudentId)
                 .HasMaxLength(250)

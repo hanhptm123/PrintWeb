@@ -1,0 +1,202 @@
+﻿@model IEnumerable<PrintWeb.Data.PaperType>
+
+@{
+    ViewData["Title"] = "Buy Paper";
+}
+
+<h2 class="mb-4">Mua thêm giấy</h2>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h4>Thông tin sinh viên</h4>
+        <p><strong>Mã sinh viên:</strong> @ViewBag.Student.StudentId</p>
+        <p><strong>Tên sinh viên:</strong> @ViewBag.Student.StudentName</p>
+        <p><strong>Số dư tài khoản:</strong> @string.Format("{0:C}", ViewBag.Student.AccountBalance)</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h4>Chọn loại giấy</h4>
+        <form method="post" asp-action="ProcessPayment">
+            <div id="paperList">
+                <div class="form-group mb-3 paper-item">
+                    <label for="paperTypeId">Loại giấy:</label>
+                    <select name="paperTypeIds[]" class="form-control paper-type-dropdown" required>
+                        <option value="">-- Chọn loại giấy --</option>
+                        @foreach (var paperType in Model)
+                        {
+                            <option value="@paperType.PaperTypeId" data-price="@paperType.Price">
+                                @paperType.PaperTypeName - @string.Format("{0:C}", paperType.Price) / trang
+                            </option>
+                        }
+                    </select>
+                    <label for="quantity">Số lượng:</label>
+                    <input type="number" name="quantities[]" class="form-control quantity-input" min="1" required />
+                    <button type="button" class="btn btn-danger btn-remove">Xóa</button>
+                </div>
+            </div>
+
+            <button type="button" id="addPaperButton" class="btn btn-secondary mb-3">Thêm loại giấy</button>
+
+            <div class="form-group mb-3">
+                <label for="totalAmount">Tổng tiền:</label>
+                <input type="text" id="totalAmount" class="form-control" readonly />
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Thanh toán</button>
+                <a asp-action="Index" asp-controller="Home" class="btn btn-secondary">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function calculateTotal() {
+        let total = 0;
+        document.querySelectorAll('.paper-item').forEach(item => {
+            const price = parseFloat(item.querySelector('.paper-type-dropdown').selectedOptions[0].getAttribute('data-price')) || 0;
+            const quantity = parseInt(item.querySelector('.quantity-input').value) || 0;
+            total += price * quantity;
+        });
+        document.getElementById('totalAmount').value = total.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    }
+
+    document.getElementById('addPaperButton').addEventListener('click', () => {
+        const newItem = document.querySelector('.paper-item').cloneNode(true);
+        newItem.querySelector('.quantity-input').value = '';
+        document.getElementById('paperList').appendChild(newItem);
+    });
+
+    document.addEventListener('input', calculateTotal);
+    document.addEventListener('click', event => {
+        if (event.target.classList.contains('btn-remove')) {
+            event.target.closest('.paper-item').remove();
+            calculateTotal();
+        }
+    });
+</script>
+
+<style>
+    /* Căn chỉnh chung */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f9f9f9;
+        padding: 20px;
+    }
+
+    /* Tiêu đề chính */
+    h2 {
+        color: #007bff;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    /* Thẻ thông báo */
+    .alert {
+        margin-bottom: 20px;
+        font-size: 16px;
+    }
+
+    /* Thẻ thông tin sinh viên */
+    .card {
+        background-color: white;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+        .card-body h4 {
+            color: #343a40;
+            margin-bottom: 15px;
+        }
+
+        .card-body p {
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+    /* Biểu mẫu */
+    .form-group label {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .form-group input, .form-group select {
+        width: 80%;
+        padding: 10px;
+        margin: 10px;
+        font-size: 16px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+    }
+
+        .form-group input:read-only {
+            background-color: #e9ecef;
+        }
+
+    /* Nút */
+    /* Căn chỉnh chung cho các nút */
+    .form-group {
+        display: flex;
+        justify-content: space-between; /* Đảm bảo hai nút cách nhau một khoảng đều */
+    }
+
+        .form-group .btn {
+            width: 20%; /* Mỗi nút chiếm 48% chiều rộng */
+            font-size: 16px;
+            font-weight: bold;
+            padding: 10px 20px;
+            margin: 10px;
+            text-align: start;
+            text-transform: uppercase;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+        border: none;
+    }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+    }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+    /* Hiệu ứng khi di chuột vào ô nhập */
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 8px rgba(0, 123, 255, 0.25);
+    }
+
+</style>

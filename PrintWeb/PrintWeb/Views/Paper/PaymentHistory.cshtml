@@ -1,0 +1,72 @@
+﻿@{
+    ViewData["Title"] = "Paper Purchase History";
+    var buyPaperLogs = ViewBag.BuyPaperLogs as List<PrintWeb.Data.BuyPaperLog>;
+}
+
+<h2 class="mb-4">Paper Purchase History</h2>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h4>Student Information</h4>
+        <p><strong>Student ID:</strong> @ViewBag.Student.StudentId</p>
+        <p><strong>Student Name:</strong> @ViewBag.Student.StudentName</p>
+        <p><strong>Account Balance:</strong> @string.Format("{0:C}", ViewBag.Student.AccountBalance)</p>
+    </div>
+</div>
+
+<h4>Purchase History Details</h4>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Purchase Date</th>
+            <th>Total Amount</th>
+            <th>Paper Details</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (buyPaperLogs == null || !buyPaperLogs.Any())
+        {
+            <tr>
+                <td colspan="3" class="text-center">No transactions found.</td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var log in buyPaperLogs)
+            {
+                <tr>
+                    <td>@log.DateBuy.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                    <td>@string.Format("{0:C}", log.TotalBuy)</td>
+                    <td>
+                        @if (log.DetailBuyPaperLogs != null && log.DetailBuyPaperLogs.Any())
+                        {
+                            @string.Join(", ", log.DetailBuyPaperLogs.Select(detail => detail.PaperType?.PaperTypeName != null
+                                     ? $"{detail.PaperType.PaperTypeName} - {detail.PaperBuy} sheets"
+                                     : $"No paper type info - {detail.PaperBuy} sheets"))
+                        }
+                        else
+                        {
+                            <span>No paper transaction.</span>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<a href="@Url.Action("BuyPaper", "Paper")" class="btn btn-secondary">Go back</a>
