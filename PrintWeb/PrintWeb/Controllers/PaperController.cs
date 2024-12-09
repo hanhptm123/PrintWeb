@@ -17,7 +17,7 @@ namespace PrintWeb.Controllers
             _context = context;
         }
 
-        // Hiển thị trang mua thêm giấy
+        // Display page to purchase more paper
         public IActionResult BuyPaper()
         {
             var studentId = User.Identity?.Name;
@@ -29,7 +29,7 @@ namespace PrintWeb.Controllers
             var student = _context.Students.FirstOrDefault(s => s.StudentId == studentId);
             if (student == null)
             {
-                TempData["ErrorMessage"] = "Không tìm thấy thông tin sinh viên.";
+                TempData["ErrorMessage"] = "Student information not found.";
                 return RedirectToAction("Index", "Home");
             }
 
@@ -50,19 +50,19 @@ namespace PrintWeb.Controllers
             var student = _context.Students.FirstOrDefault(s => s.StudentId == studentId);
             if (student == null)
             {
-                return NotFound("Sinh viên không tồn tại.");
+                return NotFound("Student does not exist.");
             }
 
             if (paperTypeIds == null || quantities == null || paperTypeIds.Count != quantities.Count)
             {
-                TempData["ErrorMessage"] = "Dữ liệu gửi lên không hợp lệ.";
+                TempData["ErrorMessage"] = "The data submitted is not valid.";
                 return RedirectToAction("BuyPaper");
             }
 
             decimal totalAmount = 0;
             var detailBuyPaperLogs = new List<DetailBuyPaperLog>();
 
-            // Duyệt qua tất cả các loại giấy và số lượng
+            // Loop through all paper types and quantities
             for (int i = 0; i < paperTypeIds.Count; i++)
             {
                 int paperTypeId = paperTypeIds[i];
@@ -76,7 +76,7 @@ namespace PrintWeb.Controllers
                 decimal amount = paperType.Price * quantity;
                 totalAmount += amount;
 
-                // Xử lý số lượng giấy (bao gồm giấy A3)
+                // Handle paper quantity (including A3 paper)
                 int pagesToAdd = paperType.PaperTypeId == 2 ? quantity * 2 : quantity;
 
                 var paperStudent = _context.DetailPaperStudents
@@ -96,7 +96,7 @@ namespace PrintWeb.Controllers
                     });
                 }
 
-                // Lưu chi tiết mua giấy vào DetailBuyPaperLog
+                // Save paper purchase details into DetailBuyPaperLog
                 detailBuyPaperLogs.Add(new DetailBuyPaperLog
                 {
                     PaperTypeId = paperTypeId,
@@ -104,14 +104,14 @@ namespace PrintWeb.Controllers
                 });
             }
 
-            // Kiểm tra số dư tài khoản của sinh viên
+            // Check student account balance
             if (totalAmount > student.AccountBalance)
             {
-                TempData["ErrorMessage"] = "Số dư tài khoản không đủ để thanh toán.";
+                TempData["ErrorMessage"] = "Insufficient account balance to complete the payment.";
                 return RedirectToAction("BuyPaper");
             }
 
-            // Tạo log mua giấy
+            // Create paper purchase log
             var buyPaperLog = new BuyPaperLog
             {
                 StudentId = studentId,
@@ -122,21 +122,20 @@ namespace PrintWeb.Controllers
             _context.BuyPaperLogs.Add(buyPaperLog);
             _context.SaveChanges();
 
-            // Lưu các chi tiết mua giấy vào bảng DetailBuyPaperLog
+            // Save paper purchase details into DetailBuyPaperLog table
             foreach (var detail in detailBuyPaperLogs)
             {
                 detail.BuyPaperLogId = buyPaperLog.BuyPaperLogId;
                 _context.DetailBuyPaperLogs.Add(detail);
             }
 
-            // Cập nhật số dư tài khoản của sinh viên
+            // Update student account balance
             student.AccountBalance -= totalAmount;
             _context.SaveChanges();
 
-            TempData["SuccessMessage"] = "Thanh toán thành công! Số lượng giấy đã được cập nhật.";
+            TempData["SuccessMessage"] = "Payment successful! The paper quantity has been updated.";
             return RedirectToAction("BuyPaper");
         }
-
 
         public IActionResult PaymentHistory()
         {
@@ -150,7 +149,7 @@ namespace PrintWeb.Controllers
             var student = _context.Students.FirstOrDefault(s => s.StudentId == studentIdFromIdentity);
             if (student == null)
             {
-                return NotFound("Không tìm thấy sinh viên.");
+                return NotFound("Student not found.");
             }
 
             var buyPaperLogs = _context.BuyPaperLogs
@@ -161,7 +160,7 @@ namespace PrintWeb.Controllers
 
             if (buyPaperLogs == null || !buyPaperLogs.Any())
             {
-                TempData["ErrorMessage"] = "Không có lịch sử mua giấy.";
+                TempData["ErrorMessage"] = "No paper purchase history available.";
             }
 
             ViewBag.Student = student;
