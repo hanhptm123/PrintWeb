@@ -79,7 +79,7 @@
             const quantity = parseInt(item.querySelector('.quantity-input').value) || 0;
             total += price * quantity;
         });
-        document.getElementById('totalAmount').value = total.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+        document.getElementById('totalAmount').value = total.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
     }
 
     document.getElementById('addPaperButton').addEventListener('click', () => {
@@ -96,6 +96,7 @@
         }
     });
 </script>
+
 
 <style>
     /* General Styles */
