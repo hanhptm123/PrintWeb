@@ -77,7 +77,7 @@ namespace PrintWeb.Controllers
                 totalAmount += amount;
 
                 // Handle paper quantity (including A3 paper)
-                int pagesToAdd = paperType.PaperTypeId == 2 ? quantity * 2 : quantity;
+                int pagesToAdd = paperType.PaperTypeId == 2 ? quantity  : quantity;
 
                 var paperStudent = _context.DetailPaperStudents
                     .FirstOrDefault(d => d.StudentId == studentId && d.PaperTypeId == paperTypeId);
