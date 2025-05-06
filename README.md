@@ -1,7 +1,7 @@
 # Smart Printing Service System (HCMSIU_SSPS)
 ## Mô tả
 
-Smart Printing Service System (HCMSIU_SSPS) là một giải pháp in ấn thông minh được phát triển dành riêng cho sinh viên tại Trường Đại học Quốc tế TP.HCM - Đại học Quốc gia Việt Nam. Hệ thống này nhằm mục đích cải thiện trải nghiệm in ấn của sinh viên, giúp họ tiết kiệm thời gian và chi phí, đồng thời tối ưu hóa quy trình in ấn trong môi trường học tập.
+Smart Printing Service System (HCMSIU_SSPS) là một giải pháp in ấn thông minh được phát triển dành riêng cho sinh viên tại Trường Đại học Quốc tế Sài Gòn -SIU. Hệ thống này nhằm mục đích cải thiện trải nghiệm in ấn của sinh viên, giúp họ tiết kiệm thời gian và chi phí, đồng thời tối ưu hóa quy trình in ấn trong môi trường học tập.
 ## Tính năng nổi bật
 ### In ấn từ xa: Sinh viên có thể gửi tài liệu để in từ xa, giúp tiết kiệm thời gian và công sức.
 ### Tùy chọn in ấn linh hoạt: Hệ thống cho phép sinh viên tùy chỉnh các tùy chọn in như chất lượng, màu sắc và kích thước giấy.
